@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using challenge.Data;
+using challenge.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using challenge.Models;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using challenge.Data;
 
 namespace challenge.Repositories
 {
@@ -29,7 +28,15 @@ namespace challenge.Repositories
 
         public Employee GetById(string id)
         {
-            return _employeeContext.Employees.SingleOrDefault(e => e.EmployeeId == id);
+            //Fix the statement to materialize the DirectReports for the root 
+            // and nested employees in the DirectReports
+            Employee employee = _employeeContext.Employees
+                .Where(e => e.EmployeeId == id)
+                .Include(e => e.DirectReports)
+                .ThenInclude(e=> e.DirectReports)
+                .SingleOrDefault();
+            
+            return employee;
         }
 
         public Task SaveAsync()

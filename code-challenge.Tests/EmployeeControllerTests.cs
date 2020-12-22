@@ -1,18 +1,13 @@
-using challenge.Controllers;
-using challenge.Data;
 using challenge.Models;
+using code_challenge.Tests.Integration.Extensions;
+using code_challenge.Tests.Integration.Helpers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using code_challenge.Tests.Integration.Extensions;
-
-using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using code_challenge.Tests.Integration.Helpers;
 using System.Text;
 
 namespace code_challenge.Tests.Integration
@@ -29,7 +24,7 @@ namespace code_challenge.Tests.Integration
             _testServer = new TestServer(WebHost.CreateDefaultBuilder()
                 .UseStartup<TestServerStartup>()
                 .UseEnvironment("Development"));
-
+                
             _httpClient = _testServer.CreateClient();
         }
 
@@ -138,5 +133,76 @@ namespace code_challenge.Tests.Integration
             // Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
+
+        [TestMethod]
+        public void GetEmployeeReportingStructure_Returns_NotFound()
+        {
+            //Arrange
+            var employee = new Employee()
+            {
+                EmployeeId = "42722d57-26d9-44cf-9ffa-cc848ba8ff27",
+                Department = "Area51",
+                FirstName = "Jimmy",
+                LastName = "Hoffa",
+                Position = "Union Leader"
+            };
+
+            //Act
+            var getRequestTask = _httpClient.GetAsync($"api/employee/{employee.EmployeeId}/reporting-structure");
+            var response = getRequestTask.Result;
+
+            //Assert
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        }
+        
+        [TestMethod]
+        public void GetEmployeeReportingStructure_4DirectReports_Returns_OK()
+        {
+            // Arrange
+            
+            
+            var expectedEmployee = new Employee
+            {
+                EmployeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f",
+                FirstName = "John",
+                LastName = "Lennon"
+            };
+            
+            // Act
+            var getReportingStructureRequestTask = _httpClient.GetAsync($"api/employee/{expectedEmployee.EmployeeId}/reporting-structure");
+            var getReportingStructureResponse = getReportingStructureRequestTask.Result;
+            var reportingStructure = getReportingStructureResponse.DeserializeContent<ReportingStructure>();
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, getReportingStructureResponse.StatusCode);
+            Assert.AreEqual(expectedEmployee.FirstName, reportingStructure.Employee.FirstName);
+            Assert.AreEqual(expectedEmployee.LastName, reportingStructure.Employee.LastName);
+            Assert.AreEqual(4, reportingStructure.NumberOfReports);
+
+        }
+
+        [TestMethod]
+        public void GetEmployeeReportingStructure_No_DirectReports_Returns_OK()
+        {
+            // Arrange
+            var expectedEmployee = new Employee
+            {
+                EmployeeId = "c0c2293d-16bd-4603-8e08-638a9d18b22c",
+                FirstName = "George",
+                LastName = "Harrison"
+            };
+
+            // Act
+            var getReportingStructureRequestTask = _httpClient.GetAsync($"api/employee/{expectedEmployee.EmployeeId}/reporting-structure");
+            var getReportingStructureResponse = getReportingStructureRequestTask.Result;
+            var reportingStructure = getReportingStructureResponse.DeserializeContent<ReportingStructure>();
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, getReportingStructureResponse.StatusCode);
+            Assert.AreEqual(expectedEmployee.FirstName, reportingStructure.Employee.FirstName);
+            Assert.AreEqual(expectedEmployee.LastName, reportingStructure.Employee.LastName);
+            Assert.AreEqual(0, reportingStructure.NumberOfReports);
+        }
+
     }
 }
