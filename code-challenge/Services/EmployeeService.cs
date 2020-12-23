@@ -37,6 +37,26 @@ namespace challenge.Services
             return null;
         }
 
+        public Employee Replace(Employee originalEmployee, Employee newEmployee)
+        {
+            if(originalEmployee != null)
+            {
+                _employeeRepository.Remove(originalEmployee);
+                if (newEmployee != null)
+                {
+                    // ensure the original has been removed, otherwise EF will complain another entity w/ same id already exists
+                    _employeeRepository.SaveAsync().Wait();
+
+                    _employeeRepository.Add(newEmployee);
+                    // overwrite the new id with previous employee id
+                    newEmployee.EmployeeId = originalEmployee.EmployeeId;
+                }
+                _employeeRepository.SaveAsync().Wait();
+            }
+
+            return newEmployee;
+        }
+
         /// <summary>
         /// Gets the employee reporting structure.
         /// </summary>
@@ -55,7 +75,7 @@ namespace challenge.Services
                 return null;
 
             int numberOfDirectReports = 0;
-            CountDirectReports(employee, ref numberOfDirectReports, startingDepth:0, maximumDepth:3);
+            CountDirectReports(employee, ref numberOfDirectReports, startingDepth: 0, maximumDepth: 3);
 
             ReportingStructure reportingStructure = new ReportingStructure
             {
@@ -78,12 +98,12 @@ namespace challenge.Services
         /// <remarks>
         /// The DirectReports contains a list of direct employees.
         /// </remarks>
-        internal void CountDirectReports(Employee node, ref int count, int startingDepth, int maximumDepth)
+        private void CountDirectReports(Employee node, ref int count, int startingDepth, int maximumDepth)
         {
             //exclude root depth
             if (startingDepth > 0)
                 count++;
-            
+
             //stop recursion if depth max is reached
             if (startingDepth < maximumDepth)
             {
@@ -98,25 +118,6 @@ namespace challenge.Services
 
             _logger.LogWarning($"Maximum depth exceeded. Maximum Depth:{maximumDepth}");
         }
-        
-        public Employee Replace(Employee originalEmployee, Employee newEmployee)
-        {
-            if(originalEmployee != null)
-            {
-                _employeeRepository.Remove(originalEmployee);
-                if (newEmployee != null)
-                {
-                    // ensure the original has been removed, otherwise EF will complain another entity w/ same id already exists
-                    _employeeRepository.SaveAsync().Wait();
 
-                    _employeeRepository.Add(newEmployee);
-                    // overwrite the new id with previous employee id
-                    newEmployee.EmployeeId = originalEmployee.EmployeeId;
-                }
-                _employeeRepository.SaveAsync().Wait();
-            }
-
-            return newEmployee;
-        }
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using challenge.Models;
+using challenge.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using challenge.Services;
-using challenge.Models;
+using System;
 
 namespace challenge.Controllers
 {

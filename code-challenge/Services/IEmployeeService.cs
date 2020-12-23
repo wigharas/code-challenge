@@ -20,5 +20,6 @@ namespace challenge.Services
         /// The employee reporting structure.
         /// </returns>
         ReportingStructure GetEmployeeReportingStructure(string employeeId);
+
     }
 }

@@ -159,8 +159,6 @@ namespace code_challenge.Tests.Integration
         public void GetEmployeeReportingStructure_4DirectReports_Returns_OK()
         {
             // Arrange
-            
-            
             var expectedEmployee = new Employee
             {
                 EmployeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f",

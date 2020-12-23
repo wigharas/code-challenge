@@ -27,4 +27,8 @@
     <ProjectReference Include="..\code-challenge\code-challenge.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>
