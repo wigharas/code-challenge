@@ -28,13 +28,15 @@ namespace challenge.Repositories
 
         public Employee GetById(string id)
         {
-            //Fix the statement to materialize the DirectReports for the root 
+            _logger.LogDebug($"Retrieving Employee. Id:{id}");
+
+            // Fix the statement to materialize the DirectReports for the root 
             // and nested employees in the DirectReports
             Employee employee = _employeeContext.Employees
-                .Where(e => e.EmployeeId == id)
-                .Include(e => e.DirectReports)
-                .ThenInclude(e=> e.DirectReports)
-                .SingleOrDefault();
+                                    .Where(e => e.EmployeeId == id)
+                                    .Include(e => e.DirectReports)
+                                    .ThenInclude(e=> e.DirectReports)
+                                    .SingleOrDefault();
             
             return employee;
         }

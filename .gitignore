@@ -3,3 +3,5 @@
 obj
 bin
 packages
+*.suo
+*.user

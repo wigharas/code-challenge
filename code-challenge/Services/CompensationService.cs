@@ -25,33 +25,33 @@ namespace challenge.Services
         {
             if (compensation == null ||
                 compensation.Employee == null)
-                return null;
+                return null; 
             
-             _logger.LogDebug("Received creating compensation.");
+            _logger.LogDebug("Received creating compensation.");
 
-             // Retrieve existing employee
-             // If not found null is returned.
-             Employee employee = _employeeRepository.GetById(compensation.Employee.EmployeeId);
-             if (employee == null)
-                 return null;
+            // Retrieve existing employee
+            // If not found null is returned.
+            Employee employee = _employeeRepository.GetById(compensation.Employee.EmployeeId);
+            if (employee == null)
+                return null;
 
-             _logger.LogDebug($"Creating Compensation. Employee Id:{employee.EmployeeId}");
-             
-             //Build compensation object
-             Compensation newCompensation = new Compensation
-             {
-                 CompensationId = Guid.NewGuid().ToString(),
-                 Employee = employee,
-                 EffectiveDate = compensation.EffectiveDate,
-                 Salary = compensation.Salary
-             };    
-             
-             // Save
-             _compensationRepository.Add(newCompensation);
-             _compensationRepository.SaveAsync().Wait();
-             _logger.LogDebug($"Compensation Saved. Id:{newCompensation.CompensationId}");
+            _logger.LogDebug($"Creating Compensation. Employee Id:{employee.EmployeeId}");
+            
+            //Build compensation object
+            Compensation newCompensation = new Compensation
+            {
+                CompensationId = Guid.NewGuid().ToString(),
+                Employee = employee,
+                EffectiveDate = compensation.EffectiveDate,
+                Salary = compensation.Salary
+            };    
+            
+            // Save
+            _compensationRepository.Add(newCompensation);
+            _compensationRepository.SaveAsync().Wait();
+            _logger.LogDebug($"Compensation Saved. Id:{newCompensation.CompensationId}");
 
-             return compensation;
+            return newCompensation;
         }
 
         public Compensation GetById(string id)

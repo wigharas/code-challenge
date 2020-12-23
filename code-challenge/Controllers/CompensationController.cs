@@ -27,7 +27,7 @@ namespace challenge.Controllers
             if (newCompensation == null)
                 return NotFound();
             
-            return CreatedAtRoute("getCompensationById", new {id = compensation.Employee.EmployeeId}, compensation);
+            return CreatedAtRoute("getCompensationById", new {id = newCompensation.Employee.EmployeeId}, newCompensation);
         }
         
         [HttpGet("{id}", Name = "getCompensationById")]
